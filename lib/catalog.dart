@@ -4,18 +4,17 @@ import 'package:flutter_cart_bloc/bloc/cart_bloc.dart';
 import 'package:flutter_cart_bloc/cart.dart';
 import 'package:flutter_cart_bloc/item.dart';
 
+import 'main.dart';
+
 class Catalog extends StatefulWidget {
   @override
   _CatalogState createState() => _CatalogState();
 }
 
 class _CatalogState extends State<Catalog> {
-  List<Item> _itemList = itemList;
 
   @override
   Widget build(BuildContext context) {
-    final _cartBloc = BlocProvider.of<CartBloc>(context);
-
     return Scaffold(
         appBar: AppBar(
           title: Text('Catalog'),
@@ -29,21 +28,18 @@ class _CatalogState extends State<Catalog> {
             )
           ],
         ),
-        body: BlocProvider(
-          builder: (context) => CartBloc(),
-          child: BlocBuilder(
-              bloc: _cartBloc,
-              builder: (BuildContext context, List state) {
-                return ListView(
-                  // 리스트뷰 아이템을 받아서 빌드 해준다는 것임.
-                  // toList() 해줘야 다시 children 에 들어감
-                  children: _itemList.map((item) => _buildItem(item, state, _cartBloc)).toList(),
-                );
-              }),
-        ));
+        body: StreamBuilder(
+            stream: cartBloc.cartList,
+            builder: (context, snapshot) {
+              return ListView(
+                children: cartBloc.itemList
+                    .map((item) => _buildItem(item, snapshot.data))
+                    .toList(),
+              );
+            }));
   }
 
-  Widget _buildItem(Item item, List state, CartBloc cartBloc) {
+  Widget _buildItem(Item item, List state) {
     final isChecked = state.contains(item);
 
     return Padding(
@@ -59,16 +55,20 @@ class _CatalogState extends State<Catalog> {
         ),
         // 오른쪽 끝에 생성됨.
         trailing: IconButton(
-            icon: isChecked ? Icon(Icons.check, color: Colors.red,
-            ) : Icon(Icons.check),
+            icon: isChecked
+                ? Icon(
+                    Icons.check,
+                    color: Colors.red,
+                  )
+                : Icon(Icons.check),
             onPressed: () {
-             setState(() {
-               if(isChecked) {
-                 cartBloc.add(CartEvent(CartEventType.remove, item));
-               } else {
-                 cartBloc.add(CartEvent(CartEventType.add, item));
-               }
-             });
+              setState(() {
+                if (isChecked) {
+                  cartBloc.add(CartEvent(CartEventType.remove, item));
+                } else {
+                  cartBloc.add(CartEvent(CartEventType.add, item));
+                }
+              });
             }),
       ),
     );

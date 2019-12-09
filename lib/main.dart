@@ -6,22 +6,19 @@ import 'package:bloc/bloc.dart';
 
 void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
+// 최상위에서 선언 해줘야됨.
+final cartBloc = CartBloc();
 
-  // 최상위에서 선언 해줘야됨.
-  final _cartBloc = CartBloc();
+class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      builder: (context) => CartBloc(),
-      child: MaterialApp(
-        title: 'Flutter Code Sample for material.Scaffold',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: LoginScreen(),
+    return MaterialApp(
+      title: 'Flutter Code Sample for material.Scaffold',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      home: LoginScreen(),
     );
   }
 }

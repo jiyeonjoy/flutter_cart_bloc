@@ -4,6 +4,7 @@ import 'package:flutter_cart_bloc/bloc/cart_bloc.dart';
 import 'package:bloc/bloc.dart';
 import 'bloc/cart_bloc.dart';
 import 'item.dart';
+import 'main.dart';
 
 class Cart extends StatefulWidget {
   @override
@@ -15,22 +16,23 @@ class _CartState extends State<Cart> {
   @override
   Widget build(BuildContext context) {
 
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Cart'),
       ),
-      body: BlocBuilder<CartBloc, List<Item>>(
-          bloc: BlocProvider.of<CartBloc>(context),
-          builder: (BuildContext context, List state) {
+      body: StreamBuilder(
+        stream: cartBloc.cartList,
+          builder: (context, snapshot) {
             var sum = 0;
-            if (state.length > 0) {
+            if (snapshot.data.length > 0) {
               // 누적되서 더한다는 뜻임.
-              sum = state.map((item) => item.price).reduce((x, y) => x + y);
+              sum = snapshot.data.map((item) => item.price).reduce((x, y) => x + y);
             }
             return Center(
               child: Text('합계 : $sum'),
             );
-            }),
+          })
       );
   }
 }
